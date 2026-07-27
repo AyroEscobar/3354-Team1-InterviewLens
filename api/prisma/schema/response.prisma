@@ -1,0 +1,27 @@
+// A student answer to one asked question, plus its per answer scores.
+model Response {
+  id                BigInt          @id @default(autoincrement())
+  sessionQuestion   SessionQuestion @relation(fields: [sessionQuestionId], references: [id], onDelete: Cascade)
+  sessionQuestionId BigInt          @unique @map("session_question_id")
+  answerText        String?         @map("answer_text")
+  audioUrl          String?         @map("audio_url") @db.VarChar(500)
+  isTranscribed     Boolean         @default(false) @map("is_transcribed")
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+  score             AnswerScore?
+
+  @@map("responses")
+}
+
+model AnswerScore {
+  id              BigInt   @id @default(autoincrement())
+  response        Response @relation(fields: [responseId], references: [id], onDelete: Cascade)
+  responseId      BigInt   @unique @map("response_id")
+  starScore       Decimal  @map("star_score") @db.Decimal(5, 2)
+  clarityScore    Decimal  @map("clarity_score") @db.Decimal(5, 2)
+  confidenceScore Decimal  @map("confidence_score") @db.Decimal(5, 2)
+  aiGenerated     Boolean  @default(true) @map("ai_generated")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@map("answer_scores")
+}

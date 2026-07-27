@@ -1,0 +1,37 @@
+// Accounts. A User is either a student or an admin (role column).
+model User {
+  id              BigInt   @id @default(autoincrement())
+  name            String   @db.VarChar(120)
+  email           String   @unique @db.VarChar(255)
+  passwordHash    String   @map("password_hash") @db.VarChar(255)
+  role            String   @db.VarChar(10) // 'student' or 'admin'
+  aiTrainingOptIn Boolean  @default(false) @map("ai_training_opt_in")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  student          StudentProfile?
+  admin            AdminProfile?
+  sessions         InterviewSession[]
+  questions        Question[]
+  auditLogs        AuditLog[]
+  deletionRequests DeletionRequest[]
+
+  @@map("users")
+}
+
+model StudentProfile {
+  userId   BigInt  @id @map("user_id")
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  major    String? @db.VarChar(120)
+  gradYear Int?    @db.SmallInt @map("grad_year")
+
+  @@map("student_profiles")
+}
+
+model AdminProfile {
+  userId     BigInt @id @map("user_id")
+  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  adminLevel Int    @default(1) @db.SmallInt @map("admin_level")
+
+  @@map("admin_profiles")
+}

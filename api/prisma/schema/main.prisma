@@ -1,0 +1,11 @@
+// Interview Lens data model (split across files in this folder).
+// generator and datasource live here; models live in the sibling files.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
