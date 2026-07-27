@@ -1,0 +1,30 @@
+// An interview session and the ordered questions asked within it.
+model InterviewSession {
+  id         BigInt    @id @default(autoincrement())
+  student    User      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId  BigInt    @map("student_id")
+  targetRole String    @map("target_role") @db.VarChar(120)
+  difficulty String    @db.VarChar(10)
+  status     String    @default("active") @db.VarChar(12) // active | completed | abandoned
+  startedAt  DateTime  @default(now()) @map("started_at")
+  endedAt    DateTime? @map("ended_at")
+
+  questions SessionQuestion[]
+  report    FeedbackReport?
+
+  @@map("interview_sessions")
+}
+
+model SessionQuestion {
+  id         BigInt           @id @default(autoincrement())
+  session    InterviewSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId  BigInt           @map("session_id")
+  question   Question         @relation(fields: [questionId], references: [id])
+  questionId BigInt           @map("question_id")
+  askOrder   Int              @db.SmallInt @map("ask_order")
+  isFollowUp Boolean          @default(false) @map("is_follow_up")
+  response   Response?
+
+  @@unique([sessionId, askOrder])
+  @@map("session_questions")
+}
