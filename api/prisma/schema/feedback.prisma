@@ -1,0 +1,13 @@
+// One feedback report per completed interview session.
+model FeedbackReport {
+  id               BigInt           @id @default(autoincrement())
+  session          InterviewSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId        BigInt           @unique @map("session_id")
+  overallScore     Int              @db.SmallInt @map("overall_score")
+  comments         String?
+  aiGenerated      Boolean          @default(true) @map("ai_generated")
+  flaggedForReview Boolean          @default(false) @map("flagged_for_review")
+  createdAt        DateTime         @default(now()) @map("created_at")
+
+  @@map("feedback_reports")
+}
