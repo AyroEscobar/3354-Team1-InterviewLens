@@ -1,0 +1,27 @@
+// The reusable question bank, including adaptive follow ups via a self relation.
+model QuestionCategory {
+  id        BigInt     @id @default(autoincrement())
+  name      String     @unique @db.VarChar(80)
+  questions Question[]
+
+  @@map("question_categories")
+}
+
+model Question {
+  id               BigInt           @id @default(autoincrement())
+  category         QuestionCategory @relation(fields: [categoryId], references: [id])
+  categoryId       BigInt           @map("category_id")
+  text             String
+  difficulty       String           @db.VarChar(10) // 'easy' | 'medium' | 'hard'
+  parent           Question?        @relation("FollowUp", fields: [parentQuestionId], references: [id])
+  parentQuestionId BigInt?          @map("parent_question_id")
+  followUps        Question[]       @relation("FollowUp")
+  isActive         Boolean          @default(true) @map("is_active")
+  createdBy        User             @relation(fields: [createdById], references: [id])
+  createdById      BigInt           @map("created_by")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+  sessionQuestions SessionQuestion[]
+
+  @@map("questions")
+}
