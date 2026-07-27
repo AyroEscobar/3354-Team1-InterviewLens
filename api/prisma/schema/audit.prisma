@@ -1,0 +1,26 @@
+// Audit trail (retained 12 months) and the 30 day deletion queue.
+model AuditLog {
+  id        BigInt   @id @default(autoincrement())
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId    BigInt?  @map("user_id")
+  eventType String   @map("event_type") @db.VarChar(50)
+  entity    String?  @db.VarChar(50)
+  entityId  BigInt?  @map("entity_id")
+  detail    Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt])
+  @@index([userId])
+  @@map("audit_log")
+}
+
+model DeletionRequest {
+  id          BigInt   @id @default(autoincrement())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      BigInt   @map("user_id")
+  requestedAt DateTime @default(now()) @map("requested_at")
+  purgeAfter  DateTime @map("purge_after")
+  status      String   @default("pending") @db.VarChar(12) // pending | completed
+
+  @@map("deletion_requests")
+}
