@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, jest } from "@jest/globals";
 import { userRepository } from "../src/repositories/userRepository.js";
 
 // A minimal fake Prisma client so these are true unit tests with no database.
@@ -9,7 +9,7 @@ function fakeClient(userMethods: Record<string, unknown>) {
 describe("userRepository", () => {
   it("findByEmail returns the matching user", async () => {
     const fake = fakeClient({
-      findUnique: vi.fn().mockResolvedValue({ id: 1n, email: "ada@utd.edu", name: "Ada" }),
+      findUnique: jest.fn().mockResolvedValue({ id: 1n, email: "ada@utd.edu", name: "Ada" }),
     });
     const user = await userRepository.findByEmail("ada@utd.edu", fake);
     expect(fake.user.findUnique).toHaveBeenCalledWith({ where: { email: "ada@utd.edu" } });
@@ -17,7 +17,7 @@ describe("userRepository", () => {
   });
 
   it("findByEmail returns null when no user exists", async () => {
-    const fake = fakeClient({ findUnique: vi.fn().mockResolvedValue(null) });
+    const fake = fakeClient({ findUnique: jest.fn().mockResolvedValue(null) });
     const user = await userRepository.findByEmail("missing@utd.edu", fake);
     expect(user).toBeNull();
   });
@@ -30,7 +30,7 @@ describe("userRepository", () => {
       role: "student" as const,
     };
     const fake = fakeClient({
-      create: vi.fn().mockResolvedValue({ id: 2n, ...newUser }),
+      create: jest.fn().mockResolvedValue({ id: 2n, ...newUser }),
     });
     const created = await userRepository.createUser(newUser, fake);
     expect(fake.user.create).toHaveBeenCalledWith({ data: newUser });
